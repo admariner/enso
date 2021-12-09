@@ -57,5 +57,6 @@ ensogl::read_args! {
         email                  : String,
         application_config_url : String,
         rust_welcome_screen    : bool,
+        rust_new_presentation_layer : bool,
     }
 }
