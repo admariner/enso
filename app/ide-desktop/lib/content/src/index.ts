@@ -820,6 +820,7 @@ class Config {
     public email: string
     public application_config_url: string
     public rust_welcome_screen: boolean
+    public rust_new_presentation_layer: boolean
 
     static default() {
         let config = new Config()
@@ -886,6 +887,9 @@ class Config {
         this.rust_welcome_screen = ok(other.rust_welcome_screen)
             ? tryAsBoolean(other.rust_welcome_screen)
             : this.rust_welcome_screen
+        this.rust_new_presentation_layer = ok(other.rust_new_presentation_layer)
+                    ? tryAsBoolean(other.rust_new_presentation_layer)
+                    : this.rust_new_presentation_layer
     }
 }
 
