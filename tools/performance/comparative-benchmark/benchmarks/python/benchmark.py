@@ -39,12 +39,7 @@ class linked_list:
 # Fixtures ====================================================================
 
 def sum_tco(sum_to):
-    accumulator = 0
-
-    for i in range(0, sum_to + 1):
-        accumulator += i
-
-    return accumulator
+    return sum(range(sum_to + 1))
 
 def sum_list(xs):
     accumulator = 0
