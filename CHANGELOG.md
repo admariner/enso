@@ -167,6 +167,7 @@
 - [Added `add_group_number` to the in-memory database.[11818]
 - [The reload button clears the HTTP cache.][11673]
 - [SQL Server Support for Aggregate][11811]
+- [Added `Download_Mode` parameter to `Data.download`.][12017]
 
 [11235]: https://github.com/enso-org/enso/pull/11235
 [11255]: https://github.com/enso-org/enso/pull/11255
@@ -178,6 +179,7 @@
 [11818]: https://github.com/enso-org/enso/pull/11818
 [11673]: https://github.com/enso-org/enso/pull/11673
 [11811]: https://github.com/enso-org/enso/pull/11811
+[12017]: https://github.com/enso-org/enso/pull/12017
 
 #### Enso Language & Runtime
 
