@@ -174,7 +174,7 @@ add_specs suite_builder =
             data.varied_type_table.at "datetimes" . value_type . should_equal Value_Type.Date_Time
             data.varied_type_table.at "mixed" . value_type . should_equal Value_Type.Mixed
             data.varied_type_table.at "mixed_dates" . value_type . should_equal Value_Type.Mixed
-            data.varied_type_table.at "just_nulls" . value_type . should_equal Value_Type.Mixed
+            data.varied_type_table.at "just_nulls" . value_type . should_equal Value_Type.Null
 
         pending_python_missing = if Polyglot.is_language_installed "python" . not then
             "Can't run Python tests, Python is not installed."
