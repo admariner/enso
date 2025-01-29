@@ -3787,7 +3787,12 @@ lazy val `engine-runner` = project
         `base-polyglot-root`.listFiles("*.jar").map(_.getAbsolutePath()) ++
         `image-polyglot-root`.listFiles("*.jar").map(_.getAbsolutePath()) ++
         `table-polyglot-root`.listFiles("*.jar").map(_.getAbsolutePath()) ++
-        `database-polyglot-root`.listFiles("*.jar").map(_.getAbsolutePath())
+        `database-polyglot-root`.listFiles("*.jar").map(_.getAbsolutePath()) ++
+        `std-aws-polyglot-root`.listFiles("*.jar").map(_.getAbsolutePath()) ++
+        `std-microsoft-polyglot-root`
+          .listFiles("*.jar")
+          .map(_.getAbsolutePath())
+
       core ++ stdLibsJars
     },
     buildSmallJdk := {
@@ -3905,7 +3910,8 @@ lazy val `engine-runner` = project
               "org.enso.image",
               "org.enso.table",
               "org.enso.database",
-              "org.eclipse.jgit"
+              "org.eclipse.jgit",
+              "com.amazonaws"
             )
           )
       }
