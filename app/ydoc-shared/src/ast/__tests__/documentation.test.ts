@@ -22,8 +22,8 @@ describe('Component documentation (plain text)', () => {
       text: 'A multiline\ncomponent comment',
     },
   ]
-  const cases = plaintextDocumentableStatements.flatMap(statement =>
-    textCases.map(textCase => ({ statement, ...textCase })),
+  const cases = plaintextDocumentableStatements.flatMap((statement) =>
+    textCases.map((textCase) => ({ statement, ...textCase })),
   )
 
   test.each(cases)('Enso source comments to normalized text', ({ statement, source, text }) => {
@@ -168,6 +168,12 @@ describe('Function documentation (Markdown)', () => {
     {
       source: '## Table below:\n\n   | a | b |\n   |---|---|',
       markdown: 'Table below:\n\n| a | b |\n|---|---|',
+    },
+    {
+      source:
+        '## - Bullet list\n     - Nested list\n       - Very nested list\n     - Nested list\n   - Bullet list',
+      markdown:
+        '- Bullet list\n  - Nested list\n    - Very nested list\n  - Nested list\n- Bullet list',
     },
   ]
 

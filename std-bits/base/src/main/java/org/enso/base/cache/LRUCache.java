@@ -109,7 +109,7 @@ public class LRUCache<M> {
       // a rare case so it seems unnecessary.
       logger.log(
           Level.WARNING,
-          "Error in cache file handling; will re-execute without caching: {}",
+          "Error in cache file handling; will re-execute without caching: {0}",
           e.getMessage());
       Item<M> rerequested = itemBuilder.buildItem();
       return new CacheResult<>(rerequested.stream(), rerequested.metadata());

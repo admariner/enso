@@ -1,4 +1,4 @@
-import { TreeCursor } from '@lezer/common'
+import { Tree, TreeBuffer, TreeCursor } from '@lezer/common'
 import {
   type BlockContext,
   type BlockParser,
@@ -13,10 +13,55 @@ import {
   Element,
   Table,
 } from '@lezer/markdown'
-import { assertDefined } from 'ydoc-shared/util/assert'
+import { assertDefined } from '../util/assert'
+
+/**
+ *  Private lezer-markdown symbols used by lezer-markdown parsers we have customized versions of.
+ */
+declare module '@lezer/markdown' {
+  export interface BlockContext {
+    block: CompositeBlock
+    stack: CompositeBlock[]
+    readonly buffer: Buffer
+
+    addNode: (block: number | Tree, from: number, to?: number) => void
+    startContext: (type: number, start: number, value?: number) => void
+  }
+
+  export interface CompositeBlock {
+    readonly type: number
+    // Used for indentation in list items, markup character in lists
+    readonly value: number
+    readonly from: number
+    readonly hash: number
+    end: number
+    readonly children: (Tree | TreeBuffer)[]
+    readonly positions: number[]
+  }
+
+  export interface Buffer {
+    content: number[]
+    nodes: Tree[]
+
+    write: (type: number, from: number, to: number, children?: number) => Buffer
+    writeElements: (elts: readonly Element[], offset?: number) => Buffer
+    finish: (type: number, length: number) => Tree
+  }
+
+  export interface InlineDelimiter {
+    readonly type: DelimiterType
+    readonly from: number
+    readonly to: number
+    side: Mark
+  }
+
+  export interface InlineContext {
+    parts: (Element | InlineDelimiter | null)[]
+  }
+}
 
 function getType({ parser }: { parser: MarkdownParser }, name: string) {
-  const ty = parser.nodeSet.types.find(ty => ty.name === name)
+  const ty = parser.nodeSet.types.find((ty) => ty.name === name)
   assertDefined(ty)
   return ty.id
 }
@@ -74,12 +119,13 @@ const orderedList: BlockParser = {
   parse: (cx, line) => {
     const size = isOrderedList(line, cx, false)
     if (size < 0) return false
+    const length = size + (isSpace(line.text.charCodeAt(line.pos + size)) ? 1 : 0)
     const orderedList = getType(cx, 'OrderedList')
     if (cx.block.type != orderedList)
       cx.startContext(orderedList, line.basePos, line.text.charCodeAt(line.pos + size - 1))
     const newBase = getListIndent(line, line.pos + size)
     cx.startContext(getType(cx, 'ListItem'), line.basePos, newBase - line.baseIndent)
-    cx.addNode(getType(cx, 'ListMark'), cx.lineStart + line.pos, cx.lineStart + line.pos + size)
+    cx.addNode(getType(cx, 'ListMark'), cx.lineStart + line.pos, cx.lineStart + line.pos + length)
     line.moveBaseColumn(newBase)
     return null
   },
@@ -404,13 +450,13 @@ export function debugTree(tree: { cursor: () => TreeCursor }, doc: string): Debu
   let current: (string | DebugTree)[] = []
   const stack: (string | DebugTree)[][] = []
   cursor.iterate(
-    node => {
+    (node) => {
       const child: (string | DebugTree)[] = [node.name]
       current.push(child)
       stack.push(current)
       current = child
     },
-    node => {
+    (node) => {
       if (current.length === 1) current.push(doc.slice(node.from, node.to))
       current = stack.pop()!
     },

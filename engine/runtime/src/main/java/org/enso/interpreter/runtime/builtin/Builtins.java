@@ -82,6 +82,7 @@ public final class Builtins {
     }
   }
 
+  private final EnsoContext context;
   private final Map<Class<? extends Builtin>, Builtin> builtins;
   private final Map<String, Map<String, Supplier<LoadedBuiltinMethod>>> builtinMethodNodes;
   private final Map<String, Builtin> builtinsByName;
@@ -129,6 +130,7 @@ public final class Builtins {
    * @param context the current {@link EnsoContext} instance
    */
   public Builtins(EnsoContext context) {
+    this.context = context;
     EnsoLanguage language = context.getLanguage();
     module = Module.empty(QualifiedName.fromString(MODULE_NAME), null);
     module.compileScope(context); // Dummy compilation for an empty module
@@ -523,6 +525,15 @@ public final class Builtins {
     return t;
   }
 
+  public Builtin getByRepresentationType(Class<?> clazz) {
+    for (var b : builtins.values()) {
+      if (b.isRepresentedBy(clazz)) {
+        return b;
+      }
+    }
+    return null;
+  }
+
   public Builtin getBuiltinType(String name) {
     return builtinsByName.get(name);
   }
@@ -778,6 +789,10 @@ public final class Builtins {
 
   public Module getModule() {
     return module;
+  }
+
+  public EnsoLanguage getLanguage() {
+    return context.getLanguage();
   }
 
   private static class LoadedBuiltinMetaMethod {

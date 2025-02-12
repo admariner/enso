@@ -1,5 +1,5 @@
 /** @file A context menu available everywhere in the directory. */
-import { useStore } from 'zustand'
+import { useStore } from '#/utilities/zustand'
 
 import ContextMenu from '#/components/ContextMenu'
 import ContextMenuEntry from '#/components/ContextMenuEntry'
@@ -7,13 +7,8 @@ import ContextMenuEntry from '#/components/ContextMenuEntry'
 import UpsertDatalinkModal from '#/modals/UpsertDatalinkModal'
 import UpsertSecretModal from '#/modals/UpsertSecretModal'
 
-import {
-  useNewDatalink,
-  useNewFolder,
-  useNewProject,
-  useNewSecret,
-  useUploadFiles,
-} from '#/hooks/backendHooks'
+import { useNewDatalink, useNewFolder, useNewProject, useNewSecret } from '#/hooks/backendHooks'
+import { useUploadFiles } from '#/hooks/backendUploadFilesHooks'
 import { useEventCallback } from '#/hooks/eventCallbackHooks'
 import type { Category } from '#/layouts/CategorySwitcher/Category'
 import { useDriveStore } from '#/providers/DriveProvider'
@@ -21,18 +16,20 @@ import { useSetModal } from '#/providers/ModalProvider'
 import { useText } from '#/providers/TextProvider'
 import type Backend from '#/services/Backend'
 import { BackendType, type DirectoryId } from '#/services/Backend'
-import { inputFiles } from '#/utilities/input'
+import { readUserSelectedFile } from 'enso-common/src/utilities/file'
 
 /** Props for a {@link GlobalContextMenu}. */
 export interface GlobalContextMenuProps {
+  /** If true, returns a list of components rather than a {@link ContextMenu}. */
+  readonly noWrapper?: boolean
   readonly hidden?: boolean
   readonly backend: Backend
   readonly category: Category
   readonly rootDirectoryId: DirectoryId
-  readonly directoryKey: DirectoryId | null
   readonly directoryId: DirectoryId | null
   readonly path: string | null
   readonly doPaste: (newParentKey: DirectoryId, newParentId: DirectoryId) => void
+  readonly event: Pick<React.MouseEvent, 'pageX' | 'pageY'>
 }
 
 /** A context menu available everywhere in the directory. */
@@ -42,13 +39,14 @@ export const GlobalContextMenu = function GlobalContextMenu(props: GlobalContext
   'use no memo'
 
   const {
+    noWrapper = false,
     hidden = false,
     backend,
     category,
-    directoryKey = null,
     directoryId = null,
     path,
     rootDirectoryId,
+    event,
   } = props
   const { doPaste } = props
 
@@ -85,13 +83,13 @@ export const GlobalContextMenu = function GlobalContextMenu(props: GlobalContext
     await uploadFilesRaw(files, directoryId ?? rootDirectoryId, path)
   })
 
-  return (
-    <ContextMenu aria-label={getText('globalContextMenuLabel')} hidden={hidden}>
+  const entries = (
+    <>
       <ContextMenuEntry
         hidden={hidden}
         action="uploadFiles"
         doAction={async () => {
-          const files = await inputFiles()
+          const files = await readUserSelectedFile()
           await uploadFiles(Array.from(files))
         }}
       />
@@ -143,7 +141,7 @@ export const GlobalContextMenu = function GlobalContextMenu(props: GlobalContext
           }}
         />
       )}
-      {isCloud && directoryKey == null && hasPasteData && (
+      {isCloud && directoryId == null && hasPasteData && (
         <ContextMenuEntry
           hidden={hidden}
           action="paste"
@@ -153,6 +151,12 @@ export const GlobalContextMenu = function GlobalContextMenu(props: GlobalContext
           }}
         />
       )}
-    </ContextMenu>
+    </>
   )
+
+  return noWrapper ? entries : (
+      <ContextMenu aria-label={getText('globalContextMenuLabel')} hidden={hidden} event={event}>
+        {entries}
+      </ContextMenu>
+    )
 }

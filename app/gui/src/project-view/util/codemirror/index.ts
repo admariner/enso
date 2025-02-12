@@ -1,13 +1,20 @@
 import { textEditorsBindings } from '@/bindings'
 import CodeMirrorRoot from '@/components/CodeMirrorRoot.vue'
-import { type VueHost } from '@/components/VueComponentHost.vue'
+import { type VueHost } from '@/components/VueHostRender.vue'
 import { injectKeyboard } from '@/providers/keyboard'
+import {
+  HeaderLevel,
+  ListType,
+  toggleHeader,
+  toggleList,
+  toggleQuote,
+} from '@/util/codemirror/markdownEditing'
 import { useCompartment, useDispatch, useStateEffect } from '@/util/codemirror/reactivity'
 import { setVueHost } from '@/util/codemirror/vueHostExt'
 import { yCollab } from '@/util/codemirror/yCollab'
 import { elementHierarchy } from '@/util/dom'
 import { ToValue } from '@/util/reactivity'
-import { Compartment, EditorState, Extension, Text } from '@codemirror/state'
+import { Compartment, EditorState, type Extension, Text } from '@codemirror/state'
 import { EditorView } from '@codemirror/view'
 import { LINE_BOUNDARIES } from 'enso-common/src/utilities/data/string'
 import {
@@ -40,7 +47,7 @@ export function useCodeMirror(
     /** If a value is provided, the editor state will be synchronized with it. */
     content?: ToValue<string | Y.Text>
     /** CodeMirror {@link Extension}s to include in the editor's initial state. */
-    extensions?: Extension[]
+    extensions?: Extension
     /** If a value is provided, it will be made available to extensions that render Vue components. */
     vueHost?: WatchSource<VueHost | undefined>
   },
@@ -101,6 +108,9 @@ export function useCodeMirror(
      */
     readonly,
     putTextAt,
+    toggleHeader: (level: HeaderLevel) => toggleHeader(editorView, level),
+    toggleQuote: () => toggleQuote(editorView),
+    toggleList: (type: ListType) => toggleList(editorView, type),
     /** The DOM element containing the editor's content. */
     contentElement: editorView.contentDOM,
   }

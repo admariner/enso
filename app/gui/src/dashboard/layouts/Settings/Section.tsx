@@ -29,14 +29,14 @@ function SettingsSection(props: SettingsSectionProps) {
   }
 
   return (
-    <div className="flex w-full flex-col gap-2.5">
+    <div className="flex w-full flex-1 flex-col gap-2.5 overflow-auto">
       {!heading ? null : (
         <Text.Heading level={2} weight="bold">
           {getText(nameId)}
         </Text.Heading>
       )}
 
-      <div className="flex flex-col gap-2">
+      <div className="flex min-h-0 flex-1 flex-col justify-start gap-2">
         {entries.map((entry, i) => (
           <SettingsEntry key={i} context={context} data={entry} />
         ))}

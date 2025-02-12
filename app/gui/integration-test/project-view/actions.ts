@@ -36,7 +36,7 @@ export async function expectNodePositionsInitialized(page: Page, yPos: number) {
   // Wait until edges are initialized and displayed correctly.
   await expect(page.getByTestId('broken-edge')).toBeHidden()
   // Wait until node sizes are initialized.
-  await expect(locate.graphNode(page).first().locator('.bgFill')).toBeVisible()
+  await expect(locate.graphNode(page).first().locator('.nodeBackground')).toBeVisible()
   // TODO: The yPos should not need to be a variable. Instead, first automatically positioned nodes
   // should always have constant known position. This is a bug caused by incorrect layout after
   // entering a function. To be fixed with #9255
@@ -66,9 +66,9 @@ export async function dragNodeByBinding(page: Page, nodeBinding: string, x: numb
 }
 
 /** Move mouse away to avoid random hover events and wait for any circular menus to disappear. */
-export async function ensureNoCircularMenusVisibleDueToHovering(page: Page) {
+export async function ensureNoComponentMenusVisibleDueToHovering(page: Page) {
   await page.mouse.move(-1000, 0)
-  await expect(locate.circularMenu(page)).toBeHidden()
+  await expect(locate.componentMenu(page)).toBeHidden()
 }
 
 /** Ensure no nodes are selected. */

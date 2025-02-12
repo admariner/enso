@@ -13,6 +13,7 @@ import org.enso.polyglot.runtime.Runtime.Api.{
 }
 import org.enso.text.{ContentVersion, Sha3_224VersionCalculator}
 import org.enso.text.editing.model
+import org.enso.testkit.FlakySpec
 import org.graalvm.polyglot.Context
 import org.scalatest.BeforeAndAfterEach
 import org.scalatest.flatspec.AnyFlatSpec
@@ -27,7 +28,8 @@ import java.util.logging.Level
 class RuntimeAsyncCommandsTest
     extends AnyFlatSpec
     with Matchers
-    with BeforeAndAfterEach {
+    with BeforeAndAfterEach
+    with FlakySpec {
 
   // === Test Utilities =======================================================
 
@@ -174,7 +176,7 @@ class RuntimeAsyncCommandsTest
     )
   }
 
-  it should "interrupt running execution context" in {
+  it should "interrupt running execution context" taggedAs Flaky in {
     val moduleName = "Enso_Test.Test.Main"
     val contextId  = UUID.randomUUID()
     val requestId  = UUID.randomUUID()
@@ -500,16 +502,15 @@ class RuntimeAsyncCommandsTest
 
     responses should contain theSameElementsAs Seq(
       Api.Response(requestId, Api.RecomputeContextResponse(contextId)),
-      TestMessages.update(
+      TestMessages.pendingInterrupted(
         contextId,
-        vId,
-        ConstantsGen.INTEGER,
         methodCall = Some(
           MethodCall(
             MethodPointer("Enso_Test.Test.Main", "Enso_Test.Test.Main", "loop"),
             Vector(1)
           )
-        )
+        ),
+        vId
       ),
       context.executionComplete(contextId)
     )

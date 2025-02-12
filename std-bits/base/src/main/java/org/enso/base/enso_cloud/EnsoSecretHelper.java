@@ -163,7 +163,7 @@ public final class EnsoSecretHelper extends SecretValueResolver {
         keyStrings.add(resolvedHeader.getRight());
       }
 
-      return Integer.toString(Arrays.deepHashCode(keyStrings.toArray()));
+      return Integer.toHexString(Arrays.deepHashCode(keyStrings.toArray()));
     }
 
     @Override

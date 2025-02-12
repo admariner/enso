@@ -3,7 +3,7 @@ import Standard.Base.Meta
 import Standard.Base.Nothing.Nothing
 import Standard.Base.Runtime.Managed_Resource.Managed_Resource
 import Standard.Base.Runtime.Ref.Ref
-from Standard.Base.Data.Boolean import Boolean, True, False
+from Standard.Base.Data.Boolean import Boolean, False, True
 
 ## PRIVATE
    This is used by ReloadDetector.java to create a `Managed_Resource` that is
@@ -17,10 +17,12 @@ from Standard.Base.Data.Boolean import Boolean, True, False
 type Reload_Detector
     private Value mr:Managed_Resource
 
+    ## Create a new reload detector.
     new -> Reload_Detector =
-        mr = Managed_Resource.register (Ref.new 1) (x-> Nothing) True
+        mr = Managed_Resource.register (Ref.new 1) (_-> Nothing) True
         Reload_Detector.Value mr
 
+    ## Check if a reload has occurred.
     has_reload_occurred self =
         self.mr.has_been_finalized
 
